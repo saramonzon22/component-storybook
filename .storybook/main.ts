@@ -1,16 +1,32 @@
-import type { StorybookConfig } from "@storybook/web-components-vite";
+import { mergeConfig } from 'vite';
+import type { StorybookConfig } from '@storybook/web-components-vite';
 
 const config: StorybookConfig = {
-  framework: '@storybook/web-components-vite',
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   addons: [
-    "@storybook/addon-links",
-    "@storybook/addon-essentials",
-    "@chromatic-com/storybook",
+    '@storybook/addon-links',
+    '@storybook/addon-essentials',
+    '@chromatic-com/storybook',
   ],
-  async viteFinal(config, options) {
-    // Add your configuration here
-    return config;
+  framework: {
+    name: '@storybook/web-components-vite',
+    options: {},
+  },
+  async viteFinal(config, { configType }) {
+    return mergeConfig(config, {
+      build: {
+        target: 'esnext',
+      },
+      server: {
+        hmr: {
+          overlay: true,
+        },
+        watch: {
+          usePolling: true,
+          interval: 1000,
+        },
+      },
+    });
   },
 };
 
